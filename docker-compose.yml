@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: audio-recorder-app
+    restart: unless-stopped
+    ports:
+      - "80:3001"
+      - "3001:3001"
+    volumes:
+      - ./server/recordings:/app/server/recordings
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    networks:
+      - audio-recorder-network
+
+networks:
+  audio-recorder-network:
+    driver: bridge
+

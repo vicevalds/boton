@@ -1,0 +1,39 @@
+# Configuración alternativa con Apache como proxy reverso
+# Usar con: docker-compose -f docker-compose.apache.yml up -d
+
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: audio-recorder-app
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./server/recordings:/app/server/recordings
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    networks:
+      - audio-recorder-network
+
+  apache:
+    image: httpd:2.4-alpine
+    container_name: audio-recorder-apache
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./apache/vhost.conf:/usr/local/apache2/conf/extra/vhost.conf:ro
+    depends_on:
+      - app
+    networks:
+      - audio-recorder-network
+
+networks:
+  audio-recorder-network:
+    driver: bridge
+
