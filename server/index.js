@@ -4,6 +4,8 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
+import FormData from 'form-data';
+import fetch from 'node-fetch';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,15 +39,49 @@ app.use(cors());
 app.use(express.json());
 
 // Ruta para subir grabaciones
-app.post('/api/upload', upload.single('audio'), (req, res) => {
+app.post('/api/upload', upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No se recibió ningún archivo' });
+  }
+
+  // Enviar el audio al endpoint externo
+  let externalResponse = null;
+  try {
+    const formData = new FormData();
+    const filePath = join(recordingsDir, req.file.filename);
+    formData.append('audio', fs.createReadStream(filePath), {
+      filename: req.file.filename,
+      contentType: 'audio/webm',
+    });
+
+    const response = await fetch('https://app.vvaldes.me/api/audio/external', {
+      method: 'POST',
+      body: formData,
+      headers: formData.getHeaders(),
+    });
+
+    const responseText = await response.text();
+    externalResponse = {
+      status: response.status,
+      statusText: response.statusText,
+      success: response.ok,
+      body: responseText,
+    };
+
+    console.log('Respuesta del servidor externo:', externalResponse);
+  } catch (error) {
+    console.error('Error al enviar audio al servidor externo:', error);
+    externalResponse = {
+      success: false,
+      error: error.message,
+    };
   }
 
   res.json({
     success: true,
     filename: req.file.filename,
     path: `/api/recordings/${req.file.filename}`,
+    externalResponse,
   });
 });
 
