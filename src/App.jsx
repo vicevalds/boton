@@ -1,25 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import RecordButton from './components/RecordButton';
-import AudioPlayer from './components/AudioPlayer';
 
 function App() {
-  const [recordings, setRecordings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [serverLog, setServerLog] = useState(null);
-
-  useEffect(() => {
-    fetchRecordings();
-  }, []);
-
-  const fetchRecordings = async () => {
-    try {
-      const response = await fetch('/api/recordings');
-      const data = await response.json();
-      setRecordings(data);
-    } catch (error) {
-      console.error('Error fetching recordings:', error);
-    }
-  };
 
   const handleRecordingComplete = async (audioBlob) => {
     setLoading(true);
@@ -42,8 +26,6 @@ function App() {
             response: data.externalResponse,
           });
         }
-        
-        await fetchRecordings();
       }
     } catch (error) {
       console.error('Error uploading recording:', error);
@@ -70,23 +52,6 @@ function App() {
         {loading && (
           <div className="text-center text-gray11">
             Subiendo grabación...
-          </div>
-        )}
-
-        {recordings.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-24 font-bold text-gray12 text-center">
-              Grabaciones
-            </h2>
-            <div className="space-y-3">
-              {recordings.map((recording) => (
-                <AudioPlayer
-                  key={recording.filename}
-                  filename={recording.filename}
-                  timestamp={recording.timestamp}
-                />
-              ))}
-            </div>
           </div>
         )}
       </div>

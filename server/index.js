@@ -14,23 +14,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Crear directorio de grabaciones si no existe
-const recordingsDir = join(__dirname, 'recordings');
-if (!fs.existsSync(recordingsDir)) {
-  fs.mkdirSync(recordingsDir, { recursive: true });
-}
-
-// Configuración de multer para guardar archivos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, recordingsDir);
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const filename = `recording_${timestamp}.webm`;
-    cb(null, filename);
-  },
-});
+// Configuración de multer para guardar archivos en memoria
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
 
@@ -48,9 +33,9 @@ app.post('/api/upload', upload.single('audio'), async (req, res) => {
   let externalResponse = null;
   try {
     const formData = new FormData();
-    const filePath = join(recordingsDir, req.file.filename);
-    formData.append('audio', fs.createReadStream(filePath), {
-      filename: req.file.filename,
+    
+    formData.append('audio', req.file.buffer, {
+      filename: 'recording.webm',
       contentType: 'audio/webm',
     });
 
@@ -79,61 +64,7 @@ app.post('/api/upload', upload.single('audio'), async (req, res) => {
 
   res.json({
     success: true,
-    filename: req.file.filename,
-    path: `/api/recordings/${req.file.filename}`,
     externalResponse,
-  });
-});
-
-// Ruta para obtener lista de grabaciones
-app.get('/api/recordings', (req, res) => {
-  fs.readdir(recordingsDir, (err, files) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al leer grabaciones' });
-    }
-
-    const recordings = files
-      .filter((file) => file.endsWith('.webm'))
-      .map((file) => {
-        const stats = fs.statSync(join(recordingsDir, file));
-        return {
-          filename: file,
-          timestamp: stats.mtime,
-          size: stats.size,
-        };
-      })
-      .sort((a, b) => b.timestamp - a.timestamp);
-
-    res.json(recordings);
-  });
-});
-
-// Ruta para servir archivos de audio
-app.get('/api/recordings/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const filePath = join(recordingsDir, filename);
-
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: 'Archivo no encontrado' });
-  }
-
-  res.sendFile(filePath);
-});
-
-// Ruta para eliminar grabaciones (opcional)
-app.delete('/api/recordings/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const filePath = join(recordingsDir, filename);
-
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: 'Archivo no encontrado' });
-  }
-
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al eliminar archivo' });
-    }
-    res.json({ success: true });
   });
 });
 
