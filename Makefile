@@ -53,13 +53,13 @@ backup: ## Crea backup de las grabaciones
 	@echo "✅ Backup creado en backups/"
 
 ssl-setup: ## Guía para configurar SSL con Let's Encrypt
-	@echo "🔒 Configuración SSL para vvaldes.me"
+	@echo "🔒 Configuración SSL para input.vvaldes.me"
 	@echo ""
 	@echo "Sigue estos pasos:"
-	@echo "1. Verifica DNS: nslookup vvaldes.me"
+	@echo "1. Verifica DNS: nslookup input.vvaldes.me"
 	@echo "2. Instala Certbot: sudo apt install certbot python3-certbot-nginx -y"
 	@echo "3. Detén Docker: docker compose -f docker-compose.nginx.yml down"
-	@echo "4. Obtén certificado: sudo certbot certonly --standalone -d vvaldes.me -d www.vvaldes.me"
+	@echo "4. Obtén certificado: sudo certbot certonly --standalone -d input.vvaldes.me"
 	@echo "5. Activa SSL: make ssl-enable"
 	@echo "6. Inicia Docker: docker compose -f docker-compose.nginx.yml up -d"
 	@echo ""

@@ -10,7 +10,7 @@ limit_req_zone $binary_remote_addr zone=general_limit:10m rate=30r/s;
 # Redirigir HTTP a HTTPS
 server {
     listen 80;
-    server_name vvaldes.me www.vvaldes.me;
+    server_name input.vvaldes.me;
     
     # Location para Let's Encrypt renovación
     location /.well-known/acme-challenge/ {
@@ -26,11 +26,11 @@ server {
 # Servidor HTTPS
 server {
     listen 443 ssl http2;
-    server_name vvaldes.me www.vvaldes.me;
+    server_name input.vvaldes.me;
 
     # Certificados SSL
-    ssl_certificate /etc/letsencrypt/live/vvaldes.me/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/vvaldes.me/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/input.vvaldes.me/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/input.vvaldes.me/privkey.pem;
     
     # Configuración SSL moderna y segura
     ssl_protocols TLSv1.2 TLSv1.3;

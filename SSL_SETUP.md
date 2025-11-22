@@ -1,26 +1,23 @@
-# 🔒 Configuración HTTPS con Let's Encrypt para vvaldes.me
+# 🔒 Configuración HTTPS con Let's Encrypt para input.vvaldes.me
 
-Esta guía te ayudará a configurar un certificado SSL gratuito para tu dominio **vvaldes.me** usando Let's Encrypt y Certbot.
+Esta guía te ayudará a configurar un certificado SSL gratuito para tu subdominio **input.vvaldes.me** usando Let's Encrypt y Certbot.
 
 ## 📋 Prerrequisitos
 
-1. **Dominio configurado**: Tu dominio `vvaldes.me` debe apuntar a la IP de tu servidor
+1. **Dominio configurado**: Tu subdominio `input.vvaldes.me` debe apuntar a la IP de tu servidor
 2. **Puerto 80 abierto**: Necesario para la verificación de Let's Encrypt
 3. **Puerto 443 abierto**: Necesario para HTTPS
 
 ## ✅ Paso 1: Verificar DNS
 
-Asegúrate de que tu dominio apunte correctamente a tu servidor:
+Asegúrate de que tu subdominio apunte correctamente a tu servidor:
 
 ```bash
-# Verificar que vvaldes.me apunta a tu servidor
-nslookup vvaldes.me
-
-# También verificar el subdominio www
-nslookup www.vvaldes.me
+# Verificar que input.vvaldes.me apunta a tu servidor
+nslookup input.vvaldes.me
 ```
 
-Deberías ver la IP de tu servidor en ambos resultados.
+Deberías ver la IP de tu servidor en el resultado.
 
 ## 🔧 Paso 2: Instalar Certbot
 
@@ -53,7 +50,7 @@ sudo systemctl stop apache2  # Si tienes Apache instalado
 Ejecuta Certbot en modo standalone para obtener tu certificado:
 
 ```bash
-sudo certbot certonly --standalone -d vvaldes.me -d www.vvaldes.me
+sudo certbot certonly --standalone -d input.vvaldes.me
 ```
 
 Certbot te hará algunas preguntas:
@@ -65,13 +62,13 @@ Si todo va bien, verás un mensaje como:
 
 ```
 Successfully received certificate.
-Certificate is saved at: /etc/letsencrypt/live/vvaldes.me/fullchain.pem
-Key is saved at:         /etc/letsencrypt/live/vvaldes.me/privkey.pem
+Certificate is saved at: /etc/letsencrypt/live/input.vvaldes.me/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/input.vvaldes.me/privkey.pem
 ```
 
 ## 🔐 Paso 5: Configurar Nginx para HTTPS
 
-Ya he actualizado tu configuración para incluir `vvaldes.me` como server_name. Ahora necesitas crear la configuración SSL completa.
+Ya he actualizado tu configuración para incluir `input.vvaldes.me` como server_name. Ahora necesitas crear la configuración SSL completa.
 
 Crea un nuevo archivo de configuración con soporte HTTPS:
 
@@ -95,7 +92,7 @@ limit_req_zone $binary_remote_addr zone=general_limit:10m rate=30r/s;
 # Redirigir HTTP a HTTPS
 server {
     listen 80;
-    server_name vvaldes.me www.vvaldes.me;
+    server_name input.vvaldes.me;
     
     # Location para Let's Encrypt renovación
     location /.well-known/acme-challenge/ {
@@ -111,11 +108,11 @@ server {
 # Servidor HTTPS
 server {
     listen 443 ssl http2;
-    server_name vvaldes.me www.vvaldes.me;
+    server_name input.vvaldes.me;
 
     # Certificados SSL
-    ssl_certificate /etc/letsencrypt/live/vvaldes.me/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/vvaldes.me/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/input.vvaldes.me/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/input.vvaldes.me/privkey.pem;
     
     # Configuración SSL moderna y segura
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -225,8 +222,7 @@ Si todo funciona correctamente, Certbot renovará automáticamente tus certifica
 
 Abre tu navegador y accede a:
 
-- ✅ https://vvaldes.me
-- ✅ https://www.vvaldes.me
+- ✅ https://input.vvaldes.me
 
 Verifica que:
 1. El candado verde (🔒) aparece en la barra de direcciones
@@ -234,7 +230,7 @@ Verifica que:
 3. No hay advertencias de seguridad
 
 También puedes probar tu configuración SSL en:
-- https://www.ssllabs.com/ssltest/analyze.html?d=vvaldes.me
+- https://www.ssllabs.com/ssltest/analyze.html?d=input.vvaldes.me
 
 ## 🛠️ Comandos útiles
 
@@ -287,7 +283,7 @@ sudo certbot renew --force-renewal
 
 ```bash
 # Verificar permisos
-sudo ls -la /etc/letsencrypt/live/vvaldes.me/
+sudo ls -la /etc/letsencrypt/live/input.vvaldes.me/
 
 # Los certificados deben ser legibles (normalmente ya lo son)
 ```
@@ -303,10 +299,10 @@ sudo ls -la /etc/letsencrypt/live/vvaldes.me/
 
 1. ✅ Instalar Certbot
 2. ✅ Detener servicios en puerto 80
-3. ✅ Obtener certificado: `sudo certbot certonly --standalone -d vvaldes.me -d www.vvaldes.me`
+3. ✅ Obtener certificado: `sudo certbot certonly --standalone -d input.vvaldes.me`
 4. ✅ Actualizar configuración de Nginx con HTTPS
 5. ✅ Iniciar Docker con `docker compose -f docker-compose.nginx.yml up -d`
-6. ✅ Verificar acceso a https://vvaldes.me
+6. ✅ Verificar acceso a https://input.vvaldes.me
 
 ---
 
