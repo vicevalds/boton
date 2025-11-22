@@ -52,4 +52,37 @@ backup: ## Crea backup de las grabaciones
 	tar -czf backups/recordings-backup-$$(date +%Y%m%d-%H%M%S).tar.gz server/recordings/
 	@echo "✅ Backup creado en backups/"
 
+ssl-setup: ## Guía para configurar SSL con Let's Encrypt
+	@echo "🔒 Configuración SSL para vvaldes.me"
+	@echo ""
+	@echo "Sigue estos pasos:"
+	@echo "1. Verifica DNS: nslookup vvaldes.me"
+	@echo "2. Instala Certbot: sudo apt install certbot python3-certbot-nginx -y"
+	@echo "3. Detén Docker: docker compose -f docker-compose.nginx.yml down"
+	@echo "4. Obtén certificado: sudo certbot certonly --standalone -d vvaldes.me -d www.vvaldes.me"
+	@echo "5. Activa SSL: make ssl-enable"
+	@echo "6. Inicia Docker: docker compose -f docker-compose.nginx.yml up -d"
+	@echo ""
+	@echo "📖 Documentación completa en SSL_SETUP.md"
+
+ssl-enable: ## Activa la configuración SSL (después de obtener certificado)
+	@echo "🔄 Activando configuración SSL..."
+	cp nginx/default.conf nginx/default.conf.backup
+	cp nginx/default.conf.ssl nginx/default.conf
+	@echo "✅ Configuración SSL activada"
+	@echo "⚠️  Ahora ejecuta: docker compose -f docker-compose.nginx.yml up -d"
+
+ssl-disable: ## Desactiva la configuración SSL (vuelve a HTTP)
+	@echo "🔄 Desactivando configuración SSL..."
+	@if [ -f nginx/default.conf.backup ]; then \
+		cp nginx/default.conf.backup nginx/default.conf; \
+		echo "✅ Configuración HTTP restaurada"; \
+	else \
+		echo "❌ No se encontró backup. Restaura manualmente desde git."; \
+	fi
+
+ssl-check: ## Verifica el estado de los certificados SSL
+	@echo "🔍 Verificando certificados SSL..."
+	@sudo certbot certificates || echo "⚠️  Certbot no instalado o sin certificados"
+
 .DEFAULT_GOAL := help
