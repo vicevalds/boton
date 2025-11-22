@@ -23,15 +23,15 @@ start: build ## Inicia el servidor en modo producción (local)
 docker-build: ## Construye la imagen Docker
 	docker-compose build
 
-docker-up: ## Levanta los contenedores
+docker-up: ## Levanta los contenedores (simple)
 	docker-compose up -d
 	@echo ""
 	@echo "✅ Aplicación corriendo en http://localhost"
 
-docker-apache: ## Levanta con Apache como proxy
-	docker-compose -f docker-compose.apache.yml up -d
+docker-nginx: ## Levanta con Nginx como proxy
+	docker-compose -f docker-compose.nginx.yml up -d
 	@echo ""
-	@echo "✅ Aplicación corriendo en http://localhost (Apache proxy)"
+	@echo "✅ Aplicación corriendo en http://localhost (Nginx proxy)"
 
 docker-down: ## Detiene los contenedores
 	docker-compose down
@@ -53,4 +53,3 @@ backup: ## Crea backup de las grabaciones
 	@echo "✅ Backup creado en backups/"
 
 .DEFAULT_GOAL := help
-

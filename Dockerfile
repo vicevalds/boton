@@ -7,10 +7,10 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 # Copiar archivos de dependencias
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json ./
 
 # Instalar dependencias
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 # Copiar el resto de archivos del proyecto
 COPY . .
@@ -27,10 +27,10 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 # Copiar archivos de dependencias
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json ./
 
 # Instalar solo dependencias de producción
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod
 
 # Copiar servidor
 COPY server ./server

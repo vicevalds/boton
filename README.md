@@ -25,8 +25,8 @@ Accede a: http://localhost:5173
 # Opción 1: Docker simple (recomendado)
 docker-compose up -d
 
-# Opción 2: Con Apache como proxy
-docker-compose -f docker-compose.apache.yml up -d
+# Opción 2: Con Nginx como proxy
+docker-compose -f docker-compose.nginx.yml up -d
 ```
 
 Accede a: http://localhost
@@ -43,6 +43,7 @@ Accede a: http://localhost
 
 - [Documentación Completa](README.proyecto.md)
 - [Guía de Despliegue en VPS](DEPLOYMENT.md)
+- [Despliegue con Nginx](NGINX_DEPLOYMENT.md)
 
 ## 🛠️ Stack Tecnológico
 
